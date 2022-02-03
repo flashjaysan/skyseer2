@@ -4,7 +4,7 @@
 class Tag {
   /**
   * Constructor.
-  * @param {number} sensorSerial sensor serial.
+  * @param {number} sensorSerial sensor serial number.
   * @param {boolean} batteryVoltageAlertStatus tag battery voltage alert status.
   * @param {boolean} temperatureAlertStatus tag temperature alert status.
   * @param {boolean} abnormalTemperatureStatus tag abnormal temperature status.

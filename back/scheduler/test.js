@@ -32,37 +32,24 @@ const gatewayData = {
   ]
 }
 
-const insert_gateway = (client) => {
-  const req = `INSERT INTO gateways(imei) VALUES('${gatewayData.imei}');`;
-  console.log(req);
-  client.query(req, (err, res) => {
-    if (!err) {
-      console.log('insert into gateway table failure');
-    } else {
-      console.log('insert into gateway table success');
-    }
-    console.log(res);
-    console.log(err);
-    client.end();
-  });
-}
-
 const {Client} = require('pg');
 const client = new Client({
   host: 'localhost',
   port: 5432,
-  database: 'postgres',
+  database: 'skyseer',
   user: 'postgres',
   password: 'root'
 });
-//client.connect();
 client.connect();
-//insert_gateway(client);
-//const req = `SELECT login, passwrd FROM USERS;`;
-const req = 'INSERT INTO USERS (login, passwrd) VALUES (\'user2\', \'user2\');';
+const req = `INSERT INTO gateways (imei) VALUES ('${gateway.imei}') RETURNING id;`;
 client.query(req, (err, res) => {
-  console.log(res);
-  console.log(err);
-  client.end();
+  if (res) {
+    const gatewayId = res.rows[0].id;
+    const req = `INSERT INTO gateways_statuses (time, alarm_type, is_connected_to_power, battery_voltage, power_voltage, gateway_id) VALUES ('${gatewayData.date}', '${gatewayData.alarmType}', '${gatewayData.isConnectedToPower}', ${gatewayData.batteryVoltage}, ${gatewayData.powerVoltage}, '${gatewayId}');`;
+    client.query(req, (err, res) => {});
+    client.end();
+  }
 });
+const transferToDatabase = () => {
 
+};

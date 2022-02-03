@@ -34,8 +34,40 @@ const convertData = (gatewayDataRawArray) => {
 
 // stocke les données exploitable dans la base de données
 const storeConvertedDataIntoDatabase = (gatewayDataDecodedArray) => {
-  // affiche simplement les données dans la console pour le moment
-  console.log(JSON.stringify(gatewayDataDecodedArray));
+  const client = new Client(connectionObject);
+  client.connect();
+
+  // for each data
+  gatewayDataDecodedArray.forEach((gatewayData) => {
+    // insertion de la gateway si elle n'est pas déjà présente
+    let gatewayId = client.query(`SELECT id FROM gateways where imei = ${gatewayData.imei};`);
+    if (!gatewayId) {
+      gatewayId = client.query(`INSERT INTO gateways (imei) VALUES ('${gatewayData.imei}') RETURNING id;`);
+    }
+
+    // insertion du status de la gateway s'il n'est pas déjà présent
+    let gatewayStatus = client.query(`SELECT id FROM gateways_statuses where time = ${gatewayData.date} AND gateway_id = ${gatewayId};`);
+    if (!gatewaystatus) {
+      client.query(`INSERT INTO gateways_statuses (time, alarm_type, is_connected_to_power, battery_voltage,  power_voltage,  gateway_id) VALUES ('${gatewayData.date}', '${gatewayData.alarmType}', '${gatewayData.isConnectedToPower}', ${gatewayData.batteryVoltage}, ${gatewayData.powerVoltage}, ${gatewayId});`);
+    }
+
+    // for each tag inside the data
+    gatewayData.tags.forEach((tag) => {
+      // insertion du sensor s'il n'est pas déjà présent
+      let sensorId = client.query(`SELECT id FROM sensors where serial_number = ${tag.sensorSerial};`);
+      if (!sensorId) {
+        sensorId = client.query(`INSERT INTO sensors (serial_number, gateway_id) VALUES (${tag.sensorSerial}, ${gatewayId});`);
+      }
+
+      // insertion du record s'il n'est pas déjà présent
+      let recordId = client.query(`SELECT id FROM records where time = ${gatewayData.date} AND sensor_id = ${sensorId};`);
+      if (!recordId) {
+        client.query(`INSERT INTO records (time, sensor_id, battery_voltage_alert, temperature_alert, abnormal_temperature_alert, humidity_alert, battery_voltage, rssi, temperature, humidity) VALUES ('${gatewayData.date}', ${tagId}, ${tag.batteryVoltageAlertStatus}, ${tag.temperatureAlertStatus}, ${tag.abnormalTemperatureStatus}, ${tag.humidityAlertStatus}, ${tag.batteryVoltage}, ${tag.rssi}, ${tag.temperature}, ${tag.humidity});`);
+      }
+    });
+  });
+
+  client.end();
 };
 
 // fonction générale appelée à chaque accès à la gateway
