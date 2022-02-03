@@ -4,7 +4,7 @@
 class Tag {
   /**
   * Constructor.
-  * @param {number} id tag id.
+  * @param {number} sensorSerial sensor serial.
   * @param {boolean} batteryVoltageAlertStatus tag battery voltage alert status.
   * @param {boolean} temperatureAlertStatus tag temperature alert status.
   * @param {boolean} abnormalTemperatureStatus tag abnormal temperature status.
@@ -14,7 +14,8 @@ class Tag {
   * @param {number} humidity tag humidity.
   * @param {number} rssi tag RSSI id.
   */
-  constructor(id,
+  constructor(
+      sensorSerial,
       batteryVoltageAlertStatus,
       temperatureAlertStatus,
       abnormalTemperatureStatus,
@@ -23,7 +24,7 @@ class Tag {
       temperature,
       humidity,
       rssi) {
-    this.id = id;
+    this.sensorSerial = sensorSerial;
     this.batteryVoltageAlertStatus = batteryVoltageAlertStatus;
     this.temperatureAlertStatus = temperatureAlertStatus;
     this.abnormalTemperatureStatus = abnormalTemperatureStatus;

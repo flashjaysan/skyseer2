@@ -10,7 +10,7 @@ class TagDecoder {
   * @return {Tag} tag decoded objet.
   */
   static decode(tagHexString) {
-    const id = this.convertId(tagHexString.substring(0, 8));
+    const sensorSerial = this.convertSensorSerial(tagHexString.substring(0, 8));
     const batteryVoltageAlertStatus = this.convertBatteryVoltageAlertStatus(
         tagHexString.substring(8, 10));
     const temperatureAlertStatus = this.convertTemperatureAlertStatus(
@@ -24,7 +24,8 @@ class TagDecoder {
     const humidityAlertStatus = humidity === 0xFF;
     const rssi = this.convertRssi(tagHexString.substring(20, 22));
 
-    return new Tag(id,
+    return new Tag(
+        sensorSerial,
         batteryVoltageAlertStatus,
         temperatureAlertStatus,
         abnormalTemperatureStatus,
@@ -36,11 +37,11 @@ class TagDecoder {
   }
 
   /**
-  * converts a hexadecimal string to a Tag ID number.
-  * @param {string} hexString tag raw data as a hexadecimal string.
-  * @return {number} tag's decoded ID number.
+  * converts a hexadecimal string to a sensor serial.
+  * @param {string} hexString sensor's serial raw data as a hexadecimal string.
+  * @return {number} sensor's decoded serial number.
   */
-  static convertId(hexString) {
+  static convertSensorSerial(hexString) {
     return parseInt(hexString, 16);
   }
 

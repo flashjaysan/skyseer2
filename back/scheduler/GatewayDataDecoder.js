@@ -11,12 +11,10 @@ class GatewayDataDecoder {
   * @return {GatewayDataDecoded} gateway decoded data objet.
   */
   static decode(gatewayDataRaw) {
-    const dataNumber = gatewayDataRaw.dataNumber;
-    const dataDate = new Date(gatewayDataRaw.date);
+    const date = new Date(gatewayDataRaw.date);
     const rawData = gatewayDataRaw.rawData;
     const rawDataLength = rawData.length;
     const imei = this.convertImei(rawData.substring(24, 40));
-    const rtcTime = this.convertRtcTime(rawData.substring(40, 52));
     const alarmType = this.convertAlarmType(rawData.substring(60, 62));
     const isConnectedToPower = this.convertIsConnectedToPower(
         rawData.substring(62, 64));
@@ -31,10 +29,9 @@ class GatewayDataDecoder {
       tags.push(TagDecoder.decode(tagString));
     }
 
-    return new GatewayDataDecoded(dataNumber,
-        dataDate,
+    return new GatewayDataDecoded(
+        date,
         imei,
-        rtcTime,
         alarmType,
         isConnectedToPower,
         batteryVoltage,
@@ -53,32 +50,25 @@ class GatewayDataDecoder {
   }
 
   /**
-  * converts a hexadecimal string to a gateway's RTC time.
-  * @param {string} hexString gateway's raw data as a hexadecimal string.
-  * @return {Date} gateway's decoded RTC time.
-  */
-  static convertRtcTime(hexString) {
-    const year = 2000 + parseInt(hexString.substring(0, 2), 16);
-    const month = parseInt(hexString.substring(2, 4), 16);
-    const day = parseInt(hexString.substring(4, 6), 16);
-    const hour = parseInt(hexString.substring(6, 8), 16);
-    const minutes = parseInt(hexString.substring(8, 10), 16);
-    const secondes = parseInt(hexString.substring(10, 12), 16);
-    return new Date(year.toString() + '-' +
-        month.toString().padStart(2, '0') + '-' +
-        day.toString().padStart(2, '0') + 'T' +
-        hour.toString().padStart(2, '0') + ':' +
-        minutes.toString().padStart(2, '0') + ':' +
-        secondes.toString().padStart(2, '0'));
-  }
-
-  /**
   * converts a hexadecimal string to a gateway's alarm type.
   * @param {string} hexString gateway's raw data as a hexadecimal string.
-  * @return {number} gateway's decoded alarm type.
+  * @return {string} gateway's decoded alarm type.
   */
   static convertAlarmType(hexString) {
-    return parseInt(hexString, 16);
+    const alarmNumber = parseInt(hexString, 16);
+    switch (alarmNumber) {
+      case 0x10:
+        return 'low battery';
+        break;
+      case 0x60:
+        return 'begin charge';
+        break;
+      case 0x61:
+        return 'ending charge';
+        break;
+      default:
+        return '';
+    }
   }
 
   /**

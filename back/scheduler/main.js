@@ -10,12 +10,13 @@ const GatewayDataDecoder = require('./GatewayDataDecoder.js');
 // configuration file import
 const config = require('./config.json');
 const gatewayUrl = config.gatewayUrl;
+const connectionObject = config.connectionObject;
 
 // stocke les données de la gateway dans un tableau et le renvoie
 const storeRawData = (responseData) => {
   const gatewayDataRawArray = [];
   responseData.forEach((item) => {
-    const gatewayData = new GatewayDataRaw(item[0], item[1], item[2]);
+    const gatewayData = new GatewayDataRaw(item[1], item[2]);
     gatewayDataRawArray.push(gatewayData);
   });
   return gatewayDataRawArray;
